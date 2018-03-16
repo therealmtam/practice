@@ -12,51 +12,50 @@ class Panel {
 
   //Adds a Child Panel to this Panel's Children
   addChildPanel(childPanel) {
-    if (this.isValidChildToAdd(childPanel, this)) {
+    if (this.isValidChildToAdd(childPanel)) {
       this.children.push(childPanel);
     }
-
-    return this.getChildrenNames(this).sort();
+    return this.childrensNames().sort();
   }
 
-  getChildrenNames(panel) {
-    return panel.children.reduce((names, child) => {
-      names.push(child.name);
-      return names;
-    }, []);
+  childrensNames() {
+    return this.children.map(child => child.name);
   }
 
-  isValidChildToAdd(child, parent) {
-    return !this.isDescendantOfParent(child, parent) &&
-      !this.isAncenstorOfParent(child, parent) &&
-      !this.isSamePanel(child, parent);
+  isValidChildToAdd(child) {
+    return !this.isDescendantOfParent(child) &&
+      !this.isAncenstorOfParent(child) &&
+      !this.isSameAsParent(child);
   }
 
-  isSamePanel(child, parent) {
-    return (child.name === parent.name);
+  isSameAsParent(child) {
+    return (child.name === this.name);
   }
 
-  isDescendantOfParent(child, parent) {
-    for (let i = 0; i < parent.children.length; i++) {
-      if (parent.children[i].name === child.name) return true;
+  isDescendantOfParent(child) {
+    const parentsDescendants = [...this.children];
+
+    for (let i = 0; i < parentsDescendants.length; i++) {
+      if (parentsDescendants[i].name === child.name) return true;
     }
     return false;
   }
 
-  isAncenstorOfParent(child, parent) {
-    for (let i = 0; i < child.children.length; i++) {
-      const childDescendant = child.children[i];
-      if (childDescendant.name === parent.name) return true;
+  isAncenstorOfParent(child) {
+    const childsDescendants = [...child.children];
 
-      if (this.hasChildren(childDescendant)) {
-        if (this.isAncenstorOfParent(childDescendant, parent)) return true;
+    for (let i = 0; i < childsDescendants.length; i++) {
+      if (childsDescendants[i].name === this.name) return true;
+
+      if (this.hasDescendants(childsDescendants[i])) {
+        if (this.isAncenstorOfParent(childsDescendants[i])) return true;
       }
     }
     return false;
   }
 
-  hasChildren(panel) {
-    return (panel.children.length > 0)
+  hasDescendants(panel) {
+    return (panel.children.length > 0);
   }
 }
 
