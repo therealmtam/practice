@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>LinkedList</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script>
+
+/**
+ * Linked List:
+ *
+ * BigO:
+ * Search: O(n) (avg & worst) => Go thorugh entire list to find a node
+ * Select: O(n) (avg & worst) => Go thorugh entire list to find a node
+ * Insertion: O(1) (avg & worst) => Once end of list is found, add a new node
+ * Deletion: O(1) (avg & worst) => Once node is found, link the previous node and the next node
+ *
+ */
+
+//-----------------------------------------------------------
+//PSEUDOCLASSICAL INSTANTIATION VERSION
+{
+
+// LinkedList Class
+function LinkedList() {
+  this._length = 0;
+  this.head = null;
+}
+
+// Node Class
+function Node(val) {
+  this.val = val;
+  this.next = null;
+}
+
+LinkedList.prototype.getLastNode = function () {
+  if (!this.head) return null;
+
+  let currentNode = this.head;
+  let nextNode = this.head.next;
+  while (nextNode) {
+    currentNode = nextNode;
+    nextNode = currentNode.next;
+  }
+  return currentNode;
+};
+
+LinkedList.prototype.addNode = function (val) {
+  let newNode = new Node(val);
+  this._length++;
+
+  if (!this.head) {
+    return this.head = newNode;
+  } else {
+    return this.getLastNode().next = newNode;
+  }
+};
+
+LinkedList.prototype.deleteNode = function (targetVal) {
+  let previousNode = null;
+  let currentNode = this.head;
+  let nextNode = this.head.next;
+  let deletedNode = null;
+
+  while (currentNode) {
+    if (currentNode.val === targetVal) {
+      if (currentNode === this.head) {
+        this.head = nextNode;
+      } else  {
+        previousNode.next = nextNode;
+      }
+      this._length--;
+      deletedNode = currentNode;
+      break;
+    }
+
+    previousNode = currentNode;
+    currentNode = nextNode;
+    nextNode = currentNode ? currentNode.next : null;
+  }
+
+  return deletedNode;
+};
+
+LinkedList.prototype.updateNode = function (oldVal, newVal) {
+  let node = this.getNode(oldVal);
+  if (node) node.val = newVal;
+  return node;
+};
+
+LinkedList.prototype.getNode = function (targetVal) {
+  let currentNode = this.head;
+  let nextNode = currentNode ? currentNode.next : null;
+
+  while (currentNode) {
+    if (currentNode.val === targetVal) break;
+
+    currentNode = nextNode;
+    nextNode = currentNode ? currentNode.next : null;
+  }
+  return currentNode;
+};
+
+//TEST
+let x = new LinkedList();
+x.addNode(1);
+x.addNode(2);
+x.addNode(3);
+x.addNode(4);
+x.addNode(5);
+x.addNode(6);
+x.addNode(7);
+x.addNode(8);
+x.addNode(9);
+x.addNode(10);
+console.log(x);
+}
+
+
+//-----------------------------------------------------------
+//ES6 CLASS VERSION
+{
+
+class Node {
+  constructor(val) {
+    this.val = val;
+    this.next = null;
+  }
+}
+
+class LinkedList {
+  constructor() {
+    this._length = 0;
+    this.head = null;
+  }
+
+  getLastNode() {
+    if (!this.head) return null;
+
+    let currentNode = this.head;
+    let nextNode = this.head.next;
+    while (nextNode) {
+      currentNode = nextNode;
+      nextNode = currentNode.next;
+    }
+    return currentNode;
+  }
+
+  addNode(val) {
+    let newNode = new Node(val);
+    this._length++;
+
+    if (!this.head) {
+      return this.head = newNode;
+    } else {
+      return this.getLastNode().next = newNode;
+    }
+  }
+
+  deleteNode(targetVal) {
+    let previousNode = null;
+    let currentNode = this.head;
+    let nextNode = this.head.next;
+    let deletedNode = null;
+
+    while (currentNode) {
+      if (currentNode.val === targetVal) {
+        if (currentNode === this.head) {
+          this.head = nextNode;
+        } else {
+          previousNode.next = nextNode;
+        }
+        this._length--;
+        deletedNode = currentNode;
+        break;
+      }
+
+      previousNode = currentNode;
+      currentNode = nextNode;
+      nextNode = currentNode ? currentNode.next : null;
+    }
+
+    return deletedNode;
+  }
+
+  updateNode(oldVal, newVal) {
+    let node = this.getNode(oldVal);
+    if (node) node.val = newVal;
+    return node;
+  }
+
+  getNode(targetVal) {
+    let currentNode = this.head;
+    let nextNode = currentNode ? currentNode.next : null;
+
+    while (currentNode) {
+      if (currentNode.val === targetVal) break;
+
+      currentNode = nextNode;
+      nextNode = currentNode ? currentNode.next : null;
+    }
+    return currentNode;
+  }
+}
+
+
+//TEST
+let x = new LinkedList();
+x.addNode(1);
+x.addNode(2);
+x.addNode(3);
+x.addNode(4);
+x.addNode(5);
+x.addNode(6);
+x.addNode(7);
+x.addNode(8);
+x.addNode(9);
+x.addNode(10);
+console.log(x);
+}
+
+
+
+</script>
+</body>
+</html>
