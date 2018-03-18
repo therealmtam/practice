@@ -20,110 +20,6 @@
  *
  */
 
-//-----------------------------------------------------------
-//PSEUDOCLASSICAL INSTANTIATION VERSION
-{
-
-// LinkedList Class
-function LinkedList() {
-  this._length = 0;
-  this.head = null;
-}
-
-// Node Class
-function Node(val) {
-  this.val = val;
-  this.next = null;
-}
-
-LinkedList.prototype.getLastNode = function () {
-  if (!this.head) return null;
-
-  let currentNode = this.head;
-  let nextNode = this.head.next;
-  while (nextNode) {
-    currentNode = nextNode;
-    nextNode = currentNode.next;
-  }
-  return currentNode;
-};
-
-LinkedList.prototype.addNode = function (val) {
-  let newNode = new Node(val);
-  this._length++;
-
-  if (!this.head) {
-    return this.head = newNode;
-  } else {
-    return this.getLastNode().next = newNode;
-  }
-};
-
-LinkedList.prototype.deleteNode = function (targetVal) {
-  let previousNode = null;
-  let currentNode = this.head;
-  let nextNode = this.head.next;
-  let deletedNode = null;
-
-  while (currentNode) {
-    if (currentNode.val === targetVal) {
-      if (currentNode === this.head) {
-        this.head = nextNode;
-      } else  {
-        previousNode.next = nextNode;
-      }
-      this._length--;
-      deletedNode = currentNode;
-      break;
-    }
-
-    previousNode = currentNode;
-    currentNode = nextNode;
-    nextNode = currentNode ? currentNode.next : null;
-  }
-
-  return deletedNode;
-};
-
-LinkedList.prototype.updateNode = function (oldVal, newVal) {
-  let node = this.getNode(oldVal);
-  if (node) node.val = newVal;
-  return node;
-};
-
-LinkedList.prototype.getNode = function (targetVal) {
-  let currentNode = this.head;
-  let nextNode = currentNode ? currentNode.next : null;
-
-  while (currentNode) {
-    if (currentNode.val === targetVal) break;
-
-    currentNode = nextNode;
-    nextNode = currentNode ? currentNode.next : null;
-  }
-  return currentNode;
-};
-
-//TEST
-let x = new LinkedList();
-x.addNode(1);
-x.addNode(2);
-x.addNode(3);
-x.addNode(4);
-x.addNode(5);
-x.addNode(6);
-x.addNode(7);
-x.addNode(8);
-x.addNode(9);
-x.addNode(10);
-console.log(x);
-}
-
-
-//-----------------------------------------------------------
-//ES6 CLASS VERSION
-{
-
 class Node {
   constructor(val) {
     this.val = val;
@@ -135,29 +31,7 @@ class LinkedList {
   constructor() {
     this._length = 0;
     this.head = null;
-  }
-
-  getLastNode() {
-    if (!this.head) return null;
-
-    let currentNode = this.head;
-    let nextNode = this.head.next;
-    while (nextNode) {
-      currentNode = nextNode;
-      nextNode = currentNode.next;
-    }
-    return currentNode;
-  }
-
-  addNode(val) {
-    let newNode = new Node(val);
-    this._length++;
-
-    if (!this.head) {
-      return this.head = newNode;
-    } else {
-      return this.getLastNode().next = newNode;
-    }
+    this.tail = null;
   }
 
   deleteNode(targetVal) {
@@ -204,6 +78,36 @@ class LinkedList {
     }
     return currentNode;
   }
+
+  insertNode(targetNodeVal, newNodeVal) {
+    let newNode = new Node(newNodeVal);
+    let previousNode = this.head;
+    let currentNode = this.head;
+    let nextNode = this.head.next;
+
+    if (targetNodeVal === this.tail.val) {
+        this.tail.next = newNode;
+        this.tail = newNode;
+    }
+
+    while (currentNode) {
+      if (currentNode.val === targetNodeVal) {
+          newNode.next = currentNode;
+          if (previousNode === this.head) {
+            this.head = newNode;
+          } else {
+            previousNode.next = newNode;
+          }
+          this._length++;
+          break;
+      }
+      previousNode = currentNode;
+      currentNode = nextNode;
+      nextNode = currentNode ? currentNode.next : null;
+    }
+
+    return currentNode ? newNode : null;
+  }
 }
 
 
@@ -220,7 +124,7 @@ x.addNode(8);
 x.addNode(9);
 x.addNode(10);
 console.log(x);
-}
+
 
 
 
