@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Permutations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+</body>
+</html>
+
+<script>
+
+/*
+PERMUTATIONS:
+
+Permutation Formula is n!/(n-r)!
+
+Time Complexity is O(# of possible permutations).
+
+- Therefore, for case where r = all the possible values, O(n * n-1 * n-2 * n-3...=> n!)
+- The call stack for a recursive version of the algorithm will consist of n number of calls where n is the number of possible values.
+
+*/
+
+const perm = '123456';  //720 possible permutations === 6!
+
+const getAllPermutations = (possibleVals, permutation = '') => {
+
+  let allPermutations = [];
+  //recursive:
+  //for loop through possible values, i++
+  for (let i = 0; i < possibleVals.length; i++) {
+    //add the current possible value into the permutation set
+    permutation += possibleVals[i];
+    //convert possibleVals to an array
+    let remainingVals = possibleVals.split('');
+      //splice the value from the copy of the possibleVals to form the remaining values, and join it back to a string
+      remainingVals.splice(i, 1);
+      remainingVals = remainingVals.join('');
+    //if the length of remaining possible values is 0
+    if (remainingVals.length === 0) {
+      //add the current permutation to all permutations
+      allPermutations.push(permutation);
+      //return all permutations
+      return allPermutations;
+    }
+
+    //else recurse with remaining possible values and a copy of the current permutation
+    allPermutations = [...allPermutations, ...getAllPermutations(remainingVals, permutation)];
+      //when the call is returned, take all the permutations and add it to the allPermutations array
+
+    //remove the last added value from the current permutation
+    permutation = permutation.slice(0, permutation.length - 1);
+  }
+  //return allPermutations after the forloop has exited
+  return allPermutations;
+
+}
+
+
+console.log(getAllPermutations(perm));
+
+
+
+</script>
