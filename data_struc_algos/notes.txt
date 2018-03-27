@@ -4,6 +4,10 @@ PROBLEM TYPES:
 - Design an algorithm to solve a problem and optimize it for time complexity
   - Optimize it using a data structure
 
+- Design a algo to move through a set of data as efficiently as possible to solve ___.
+  - These algos usually need to do something while moving through. Those sub actions can be
+  stubbed out into separate helpers to abstract away actions.
+
 
 TRAVERSAL METHODS:
 
@@ -92,3 +96,9 @@ Binary Tree:
 
 
 
+Heap: (min or max is the parent node (the node at the top))
+
+- Heap is a like a binary tree with 2 childs per parent.
+- Heap is inserted left to right no matter what. Then the node is bubbled up to it's "right" location that satisfies the heap criteria.
+- There is no concept of a left or right node because that order doesn't matter unlike a binary tree.
+- Heap criteria for final placement is that it is less than the parent node AND its child nodes need to be less than it.

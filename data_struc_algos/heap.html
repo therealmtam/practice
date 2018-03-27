@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Heap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+</body>
+</html>
+
+<script>
+
+/*HEAPS:
+- Heaps are "priority queues" where the parent node of child nodes is either > (in max heap) or  < (in min heap) them.
+- Heaps have a max of 2 nodes per parent
+- Heaps are stored in an array where each row is stored left to right (meaning all values are added left to right in the tree:
+    min heap:
+    Row1 = 10
+    Row2 = 11 12
+    Row3 = 13 14 15 16
+    Row4 = 17 18 ...
+
+    results in an array [10, 11, 12, 13, 14, 15, 16, 17, 18]
+- Heap property:
+  - max heap: parent node is the max of the set [parent, left child, right child]
+  - min heap: parent node is the min of the set [parent, left child, right child]
+
+Methods:
+- Adding to the heap => push the new value to the end of the heap array, heapify up the tree using the criteria
+
+- Removing the root node (top most node) from the heap =>
+  - swap the root with the last value in the array
+  - then remove the last value in the array
+  - then heapify down the new root using the criteria
+
+- HeapifyUp => swap the child with the parent if the parent is > (min heap) or < (max heap) the child.
+
+- HeapifyDown => (moving a parent node down)
+  - If the left child exists, then a right child must exist. Therefore, check if the parent has a left child in the heapArray.
+    - Find the smaller (if min heap) or bigger (if max heap) of the two children if there is a right child
+    - Check if the parent meets the heapify criteria for max/min heap with the smallest (or biggest) child
+      - Swap to meet the criteria if necessary
+  - Continue this process until the parent can no longer be moved down
+
+Use:
+Heaps are used to intermittenly store an array of data that needs to be sorted.
+
+To sort a random array in ascending order:
+
+ex. [4, 3, 5, 10, 1]
+
+1) Create a max heap from the sorted array
+  - Create a heap array and starting with the 0th index in the original array, add to the heap array using the add method
+  which adds the value to the end of the heap and heapifyUps using the max heap criteria.
+
+  ex. max heap = [10, 5, 4, 3, 1]
+
+  - This can be done in place by creating a section of the array that is the max heap:
+
+  ex. [max heap section | values to be added to max heap section] => [4 | 3, 5, 10, 1] => outcome is a [max heap]
+
+2) Then on the max heap,
+  a) Swap the first and last values
+
+  ex. [1, 5, 4, 3, | 10] => [ max heap section | sorted in ascending order section]
+
+    - The last value now represents the ascending sorted section of the array
+
+  b) Heapify down the new root until it meets the max heap criteria.
+
+  ex. [5, 4, 3, 1, | 10]
+
+  c) repeat until the (a) and (b) until the outcome is an array sorted in ascending order.
+
+3) To sort in descending order, perform the steps above but using min heap.
+
+Time complexity:
+  - Creating the max/min heap from the random array => O(n + heapifyUp)
+  - The swap of first and last for each value is O(n)
+    - And Each swap requires a Heapify Down process which is O(log n)
+    - Therefore, this total step is O (n log n)
+
+  The total process is O(n + swapping + n log n) => O(n log n).
+
+Space complexity is constant since all steps can be performed in place
+*/
+
+
+
+//Find the parent given a child (look up in the tree)
+//returns the location of where the parent index would be. For index 0, the parent is -1.
+const getParentIndex = (childIndex) => {
+  return Math.floor((childIndex - 1) / 2);
+};
+
+//Find the child given a parent (look down in the tree)
+//returns the location where a left child would be
+const getLeftChildIndex = (parentIndex) => {
+  return 2 * parentIndex + 1;
+};
+
+//Find the child given a parent (look down in the tree)
+//returns the location where a right child would be
+const getRightChildIndex = (parentIndex) => {
+  return 2 * parentIndex + 2;
+};
+
+const hasLeftChild = (index, heapArray) => {
+  return getLeftChildIndex(index) < heapArray.length ? true : false;
+};
+
+const hasRightChild = (index, heapArray) => {
+  return getRightChildIndex(index) < heapArray.length ? true : false;
+};
+
+const hasParent = (index) => {
+  return getParentIndex(index) >= 0 ? true : false;
+};
+
+const leftChild = (index, heapArray) => {
+  return heapArray[getLeftChildIndex(index)];
+};
+
+const rightChild = (index, heapArray) => {
+  return heapArray[getRightChildIndex(index)];
+};
+
+const parent = (index, heapArray) => {
+  return heapArray[getParentIndex(index)];
+};
+
+
+const swap = (indexOne, indexTwo, heapArray) => {
+  let temp = heapArray[indexOne];
+  heapArray[indexOne] = heapArray[indexTwo];
+  heapArray[indexTwo] = temp;
+};
+
+
+//Swap the last and first nodes,
+//return the last node (which in a min heap is the smallest number of the heap and max is the largest number)
+//then heapifydown the new root to restore the heap to min or max heap
+
+const poll = (heapArray) => {
+  //check to see if the heap is empty.
+  if (heapArray.length === 0) return null;
+
+  //swap the first and last values in the array
+  swap(0, heapArray.length - 1, heapArray);
+
+  //Remove the last element which used to be the first
+  const removedVal = heapArray.pop();
+
+  minHeapifyDown(0, heapArray); //can place maxHeapifyDown here
+
+  return removedVal;
+};
+
+const minHeapifyDown = (index, heapArray) => {
+  //If there is no left child, there is no right child because of the add process adds left then right.
+  //If there is no left child, there is nowhere to heapify down to.
+  while(hasLeftChild(index, heapArray)) {
+    //find the smallest child value.
+    let smallestChildIndex = getLeftChildIndex(index);
+    if (hasRightChild(index, heapArray) && rightChild(index, heapArray) < leftChild(index, heapArray)) {
+      smallestChildIndex = getRightChildIndex(index);
+    }
+
+    if (heapArray[smallestChildIndex] < heapArray[index]) {
+      //swap values with the smallest child if the child's is < current index's value
+      swap(smallestChildIndex, index, heapArray);
+      //set the current index to the index we just swapped down to
+      index = smallestChildIndex;
+    } else {
+      //if the current index's value is > the smallest child index, break because it is placed correctly
+      break;
+    }
+  }
+};
+
+const minHeapifyUp = (index, heapArray) => {
+  while (hasParent(index) && parent(index, heapArray) > heapArray[index]) {
+    swap(getParentIndex(index, heapArray), index, heapArray);
+    index = getParentIndex(index);
+  }
+}
+
+const add = (value, heapArray) => {
+  //add to end of heap
+  heapArray.push(value);
+  //bubble up
+  minHeapifyUp(heapArray.length - 1, heapArray);
+}
+
+const createMinHeap = (array) => {
+  //create a min heapArray from the array
+  let minHeap = [];
+  //loop over entire array for array.length
+  for (let i = 0; i < array.length; i++) {
+    //take the first number in the array and add it to the heap using the heap method
+    minHeap.push(array[i]);
+    //then heapifyUp the value
+    minHeapifyUp(minHeap.length - 1, minHeap);
+  }
+  return minHeap;
+}
+
+const heapSortAscending = (array) => {
+  let minHeap = createMinHeap(array);
+
+  let output = [];
+  //loop to poll the heapArray which returns the min value of the heap until there is only 1 value left in the heap
+  while (minHeap.length > 0) {
+    let nextMinVal;
+    if (minHeap.length === 1) {
+      //add min value to ascending sorted array as the last value
+      nextMinVal = minHeap.pop();
+    } else if (minHeap.length > 1) {
+      //min value = poll(heap);
+      nextMinVal = poll(minHeap);
+      //add that min value to a ascending sorted array as the last value
+    }
+    output.push(nextMinVal);
+  }
+  return output;
+}
+
+const printHeap = (heapArray) => {
+  let output = [];
+  let totalGrabbed = 0;
+  let prevRowQty = 0;
+
+  while (totalGrabbed < heapArray.length) {
+
+      let maxQtyItemsInRow = prevRowQty * 2;
+      let itemsToGrab;
+      if (maxQtyItemsInRow + totalGrabbed > heapArray.length) {
+        itemsToGrab = heapArray.length - totalGrabbed;
+      } else if (prevRowQty === 0) {
+        itemsToGrab = 1;
+      } else {
+        itemsToGrab = maxQtyItemsInRow;
+      }
+
+      let rowValues = [];
+      for (let i = 0; i < itemsToGrab; i++) {
+        rowValues.push(heapArray[totalGrabbed + i]);
+      }
+      output.push(rowValues);
+
+    prevRowQty = itemsToGrab;
+    totalGrabbed += itemsToGrab;
+  }
+
+  console.log(output);
+}
+
+//TEST:
+let heap = [10, 11, 12, 15, 16, 17, 18];
+
+add(2, heap);
+console.log(heap);
+printHeap(heap);
+
+heap = [200, 10, 11, 12, 15, 16, 17, 18];
+
+minHeapifyDown(0, heap);
+console.log(heap);
+printHeap(heap);
+
+heap = [200, 12, 1, 100, 15, 16, 17, 18];
+
+let sorted = heapSortAscending(heap);
+console.log(sorted);
+printHeap(sorted);
+
+</script>
