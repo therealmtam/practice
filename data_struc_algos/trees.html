@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Trees</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+</body>
+</html>
+
+
+
+<script>
+/*
+Trees:
+Types:
+- Binary tree - a tree with only 2 possible nodes. Nodes are added to the tree in breadth first fashion from left to right in each row
+- Binary Search Tree - a binary tree where left node is <= parent, and right node is > parent
+
+
+      1
+      /\
+    2   3
+  /\
+ 4 5
+
+Depth First Traversals:
+(a) Inorder (Left, Root, Right) : 4 2 5 1 3
+(b) Preorder (Root, Left, Right) : 1 2 4 5 3
+(c) Postorder (Left, Right, Root) : 4 5 2 3 1
+
+Breadth First or Level Order Traversal : 1 2 3 4 5
+- implemented typically recursively since # of rows is unknown in a tree
+- Traverses left to right on each row since it adds nodes to the queue left to right
+- Time complexity O(n^2) where n is row number, row = 0 is the root node.
+- Callstack has each recursive call made for each row of the tree. So for n rows = n calls on the callstack.
+- Represented by a queue of all the nodes in each row, and each call is an evaluation of all the nodes in the queue for a given row.
+
+binary search tree:
+        5
+        /\
+      4   7
+      /   /\
+    3     6 8
+   /
+  2
+/
+1
+
+Inorder on binary search tree = 1, 2, 3, 4, 5, 6, 7, 8  (left, root, right)
+  - Inorder will return an array of values sorted in ascending order for a BST
+
+Preorder on binary search tree = 5, 4, 3, 2, 1, 7, 6, 8 (root, left, right)
+  - Preorder is used to create an array of values that if started from the front of the array to form a BST, you'd get the
+  same result (ex. 5 then 4, then 3...to create the BST);
+  - Preorder is used if you want to search all of the roots before diving into its leaves
+
+Postorder on binary search tree = 1, 2, 3, 4, 6, 8, 7, 5 (left, right, root)
+  - Use Postorder if you want to search all the leaves of any tree before searching the roots
+  - Use it also to delete nodes from a tree since you delete the leaves before their parent
+
+*/
+
+function TreeNode(val) {
+  this.val = val;
+  this.left = null;
+  this.right = null;
+};
+
+let treeA = new TreeNode(1);
+treeA.left = new TreeNode(2);
+treeA.right = new TreeNode(3);
+treeA.right.left = new TreeNode(6);
+treeA.right.right = new TreeNode(7);
+treeA.left.left = new TreeNode(4);
+treeA.left.right = new TreeNode(5);
+
+console.log('Tree A ', treeA);
+//------------------------
+const inorderSearch = (targetVal, treeNode) => {
+
+  //left, root, right is the traversal order
+
+  //if treeNode has a left child
+  if (treeNode.left) {
+    //recurse with targetVal and treeNode.left
+    let foundNode = inorderSearch(targetVal, treeNode.left);
+      //set resultOfRecurse = the recurse return value
+      //if the result is a node, search is over and return the node
+      if (foundNode) return foundNode;
+  }
+  //if the treeNode's value is === target, return the node
+  if (treeNode.val === targetVal) return treeNode;
+
+  //if treeNode has a right child
+  if (treeNode.right) {
+    //recurse with the targetVal and treeNode.right
+    let foundNode = inorderSearch(targetVal, treeNode.right);
+      //set result to the return
+      //if result is a node, search is over and return the node
+      if (foundNode) return foundNode;
+  }
+  //if not found a valid value, return null
+  return null;
+};
+
+console.log(inorderSearch(7, treeA));
+
+//------------------------
+const preorderSearch = (targetVal, treeNode) => {
+
+  //root, left, right is the traversal order
+
+  //check currentNode's value if equal to target
+  if (treeNode.val === targetVal) return treeNode;
+    //if it is, return the node
+
+  //if currentNode has a left child,
+  if (treeNode.left) {
+    //recurse preorderSearch with target val and pass in the left node
+    let foundNode = preorderSearch(targetVal, treeNode.left);
+      //if the return of the recurse is a node, return it back up because search is over
+      if (foundNode) return foundNode;
+      //else if it is null, move onto next step
+  }
+
+  //if currentNode has a right child,
+  if (treeNode.right) {
+    //recurse preorderSearch with target val and pass in the right node
+    let foundNode = preorderSearch(targetVal, treeNode.right);
+      //if the return of the recurse is a node, return it back up because search is over
+      if (foundNode) return foundNode;
+      //else if it is null, move onto next step
+  }
+  //if there is no child nodes or done checking child nodes with no result, return null
+  return null;
+}
+
+console.log(preorderSearch(6, treeA));
+
+//------------------------
+const postorderSearch = (targetVal, treeNode) => {
+  //left right root is the traversal order
+
+  if (treeNode.left) {
+    let foundNode = postorderSearch(targetVal, treeNode.left);
+    if (foundNode) return foundNode;
+  }
+
+  if (treeNode.right) {
+    let foundNode = postorderSearch(targetVal, treeNode.right);
+    if (foundNode) return foundNode;
+  }
+
+  if (treeNode.val === targetVal) return treeNode;
+  return null;
+};
+
+console.log(postorderSearch(7, treeA));
+
+//------------------------
+const breadthFirstSearch = (targetVal, tree, queue = [], nodeCountForRow = 0) => {
+
+  //recursive implementation
+
+  //set an empty queue to hold all nodes
+  //if queue is empty, then push on the head node of the tree
+  if (queue.length === 0) {
+    queue.push(tree);
+    //increment the counter for nodecount in row to 1
+    nodeCountForRow = 1;
+  }
+
+  //currentNodeCountForRow = 0;
+  let currentNodeCountForRow = 0;
+  //for loop through 0 until counter; i++
+  for (let i = 0; i < nodeCountForRow; i++) {
+    //shift a node off of the queue, set it as currentNode
+    let currentNode = queue.shift();
+    //if currentNode === targetVal, return node
+    if (currentNode.val === targetVal) return currentNode;
+    //else if currentNode has a left node, push it onto the queue
+    if (currentNode.left) {
+      queue.push(currentNode.left);
+      //incrementCurrentNodeCountForRow++
+      currentNodeCountForRow++;
+    }
+      //if it has a right node, push it also onto the queue
+        //incrementCurrentNodeCountForRow++
+    if (currentNode.right) {
+      queue.push(currentNode.right);
+      //incrementCurrentNodeCountForRow++
+      currentNodeCountForRow++;
+    }
+  }
+
+  //if the queue is empty (length === 0), return null;
+  if (queue.length === 0) return null;
+  //else recurse with targetval, tree, copy of the queue, currentNodeCountForRow
+  return breadthFirstSearch(targetVal, tree, queue, currentNodeCountForRow);
+    //return the recursed return value
+
+};
+
+console.log(breadthFirstSearch(5, treeA));
+
+
+</script>
