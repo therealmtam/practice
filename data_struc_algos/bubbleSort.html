@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>BubbleSort</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+</body>
+</html>
+
+<script>
+
+/*
+BUBBLE SORT:
+
+Time complexity:
+- O(n for loop 1 * n for nested loop) => O(n^2)
+
+*/
+
+const arr = [20,1,5,4,2,3,1];
+
+const bubbleSort = (arr) => {
+
+  //for loop through entire array array.length times incrementing count by 1
+  for (let i = 0; i < arr.length; i++) {
+    //keep track of number of swaps to detect when everything is in the right place
+    let swapCount = 0;
+    //for loop through j until j < array.length, j++
+    for (let j = 0; j < arr.length; j++) {
+      //swap j+1 with j if j+1 is less than j
+      if (arr[j + 1] < arr[j]) {
+        let temp = arr[j+1];
+        arr[j+1] = arr[j];
+        arr[j] = temp;
+        swapCount++;
+      }
+    }
+    //Exit early if all the elements are in the right place
+    if (swapCount === 0) break;
+  }
+};
+
+
+bubbleSort(arr);
+console.log(arr);
+
+</script>
