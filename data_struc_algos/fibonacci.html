@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Fibonacci</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+</body>
+</html>
+
+
+<script>
+/*
+Fibonacci num at any idex is sum of 2 numbers prior:
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144
+
+Time complexity of Recursive Version:
+- O(2^n) exponential time where n represents the tree's max depth (not an exact correlation but close to O(2^n)
+
+Time complexity of NonRecursive Version:
+- O(n)
+*/
+const num = 100; //fib num === 3
+
+const fibRecursion = (index) => {
+  //if index = 0, fib is 0, fib of 1 is 1, else fib of index 2 and up is sum of 2 prior
+  if (index === 0) return 0;
+  if (index === 1) return 1;
+    //return fib = 0 or 1 depending
+  //else
+    //return fib = fib(index - 1) and (index - 2)
+  return fibRecursion(index - 1) + fibRecursion(index - 2);
+};
+
+const fib = (index) => {
+  //fibNums = [];
+  let fibNums = [];
+  //for loop until i === index, i++
+  for (let i = 0; i <= index; i ++) {
+    //compute the fib number for index i based on i - 1 and i - 2
+    if (i === 0) fibNums.push(0);
+    if (i === 1) fibNums.push(1);
+      //if i = 0, fib is 0, i = 1, fib is 1
+      //else i = fib i-1 + i-2
+    if (i > 1) fibNums.push(fibNums[i - 1] + fibNums[i - 2]);
+    //push the fib number into fibNums
+  }
+  //return fibNums[index];
+  return fibNums[index];
+}
+
+console.log(fib(num));
+console.log(fibRecursion(num));
+
+
+</script>
