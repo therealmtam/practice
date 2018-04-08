@@ -44,7 +44,7 @@ const getAllConsecutiveCombos = (possibleVals) => {
 console.log(getAllConsecutiveCombos(combo));
 
 //-----------------------------------------
-combo = '12345678';
+combo = '123456';
 let comboSize = 3;  //n!/(n-k)!*k! => 8!/(5!*3!) => 56;
 
 const getAllCombosForSubset = (possibleVals, subsetSize, currentCombo = '') => {
@@ -84,5 +84,56 @@ const getAllCombosForSubset = (possibleVals, subsetSize, currentCombo = '') => {
 }
 
 console.log(getAllCombosForSubset(combo, comboSize));
+
+
+
+//-----------------------------------------
+const getAllCombosForSubset2 = (possibleVals = '', subset = 0, currCombo = '') => {
+
+  //set array to store all generated combos
+  let allCombos = [];
+  //set remainingVals = possibleVals;
+  let remainingVals = possibleVals;
+
+  //for let i = 0; i < possibleVals.length; i++
+  for (let i = 0; i < possibleVals.length; i++){
+    //Add a letter from the remaining values to the combo
+      //currCombo += remainingVals[0];
+      currCombo += remainingVals[0];
+
+    //remove the added value from possible values
+      //remainingVals = remainingVals.slice(1);
+      remainingVals = remainingVals.slice(1);
+
+    //(if at end of the combo)
+    //if currcombo = subset length,
+    if (currCombo.length === subset) allCombos.push(currCombo);
+      //add combo to all generated,
+      //loop again
+
+    //(for case not at end of combo && there are enough remaining values to fill the combo)
+    //if(currCombo.length < subset && remainingVals.length >= subset - currcombo.length)
+    if (currCombo.length < subset && remainingVals.length >= subset - currCombo.length) {
+      //recurse
+      //take returned values, store them into the all generated array
+      allCombos = [...allCombos, ...getAllCombosForSubset2(remainingVals, subset, currCombo)];
+    }
+
+    //remove added value from the combo
+    currCombo = currCombo.slice(0, currCombo.length - 1);
+  }
+
+  //return all generated combos
+  return allCombos;
+}
+
+let test2 = '123456';
+let subset2 = 3;
+
+console.log(getAllCombosForSubset2(test2, subset2));
+
+
+
+
 
 </script>
