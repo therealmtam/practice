@@ -160,51 +160,98 @@ const postorderSearch = (targetVal, treeNode) => {
 
 console.log(postorderSearch(7, treeA));
 
-//------------------------
-const breadthFirstSearch = (targetVal, tree, queue = [], nodeCountForRow = 0) => {
 
-  //recursive implementation
+//----------------------------------------------------------
+// Breadth First:
+/*
+  Abstract concept:
+  - Use a queue to fill it up with nodes and child nodes
+  - Don't want to actively manage the queue except know that unless it is empty, keep using it
+  - Analyze one row of nodes at a time
 
-  //set an empty queue to hold all nodes
-  //if queue is empty, then push on the head node of the tree
-  if (queue.length === 0) {
-    queue.push(tree);
-    //increment the counter for nodecount in row to 1
-    nodeCountForRow = 1;
-  }
+  - In the non-recursive option, the queue is a queue of all nodes from Left to right on each row. This version does not have a concept of rows that need to be actively managed unlike the recursive option where the recursive call represents the loop through a variable number of rows. So this is simply moving through and placing nodes into a queue and processing them one by one.
 
-  //currentNodeCountForRow = 0;
-  let currentNodeCountForRow = 0;
-  //for loop through 0 until counter; i++
-  for (let i = 0; i < nodeCountForRow; i++) {
-    //shift a node off of the queue, set it as currentNode
-    let currentNode = queue.shift();
-    //if currentNode === targetVal, return node
-    if (currentNode.val === targetVal) return currentNode;
-    //else if currentNode has a left node, push it onto the queue
-    if (currentNode.left) {
-      queue.push(currentNode.left);
-      //incrementCurrentNodeCountForRow++
-      currentNodeCountForRow++;
+  function (node)
+    - initiate queue with node
+
+    - while the queue is not empty:
+      - pop one off the queue
+      - analyze that node for whatever criteria (ex. isTextNode or it's value is === target)
+        - Perform action as a result of the analysis
+      - check if it has kids
+        - If it does, push them into the queue
+          - (The order in which you push children in should be left to right since breadth first is left to right)
+
+    - return with the end result of using BF to analyze all the ndoes
+
+
+  - In the recursion option, you use the callstack to move row to row, where instead of one queue for all nodes, you have a queue for each row. Then you need a loop to go through each row's nodes.
+
+  functionRecursion (node, queueOfRowNodes)
+    - initiate recursive loop by setting queueOfRowNodes to [node] on the first iteration
+    - For loop through the queueOfRowNodes selecting each node
+      - analyze the node for whatever criteria
+        - perform action as a result of the analysis
+      - check if the node has kids
+        - If so, push them into a new queue that represents the next row
+    - Following the loop
+      - if the next row's queue is empty, then return the result of the analysis/action
+      - if the next row's queue is not empty, then recurse, passing in the next row's queueOfRowsNodes
+
+  - Based on this breakdown, there are 2 loops being used for this one (recursive loop to move rows and for loop to go through each row), and while loop to go through the queue in the non-recursive route. The time complexity of both is the same since you have to visit each node in the same order.
+*/
+
+{
+  const BFS_while = (target, node) => {
+    let queue = [node]; //initialize before while loop
+
+    while (queue.length) {
+      //grab a node from the queue
+      let currentNode = queue.shift();
+
+      //analyze the node and perform action if it meets criteria
+      if (currentNode.val === target) return currentNode;
+
+      //Add its kids, if available, to the queue in Left then Right order
+      if (currentNode.left) queue.push(currentNode.left);
+      if (currentNode.right) queue.push(currentNode.right);
     }
-      //if it has a right node, push it also onto the queue
-        //incrementCurrentNodeCountForRow++
-    if (currentNode.right) {
-      queue.push(currentNode.right);
-      //incrementCurrentNodeCountForRow++
-      currentNodeCountForRow++;
+
+    return null;
+  };
+
+
+  console.log('BFS_while ', BFS_while(5, treeA));
+}
+
+{
+  const BFS_recursive = (targetVal, node, queueOfRowNodes) => {
+
+    //Initialize the queueOfRowNodes at start of program:
+    if (!queueOfRowNodes) queueOfRowNodes = [node];
+
+    //Create storage for next row's nodes rather than use the same queue of this row's nodes.
+    let nextRowsNodes = [];
+
+    //Loop through the row's nodes. Note you can use a for loop too but since we are going to shift(i.e., remove) nodes from the queue, we can just set a simple while loop criteria instead of controlling each iteration:
+    while (queueOfRowNodes.length) {
+      //get next node from the queue
+      let currentNode = queueOfRowNodes.shift();
+
+      //Analyze the node and perform action if conditions are met
+      if (currentNode.val === targetVal) return currentNode;
+
+      //Add next row's nodes in Left Right order since it is BF
+      if (currentNode.left) nextRowsNodes.push(currentNode.left);
+      if (currentNode.right) nextRowsNodes.push(currentNode.right);
     }
-  }
 
-  //if the queue is empty (length === 0), return null;
-  if (queue.length === 0) return null;
-  //else recurse with targetval, tree, copy of the queue, currentNodeCountForRow
-  return breadthFirstSearch(targetVal, tree, queue, currentNodeCountForRow);
-    //return the recursed return value
+    //After processed all current row's nodes, conditional for recursion:
+    return (nextRowsNodes.length) ? BFS_recursive(targetVal, null, nextRowsNodes) : null;
 
-};
+  };
 
-console.log(breadthFirstSearch(5, treeA));
-
+  console.log('BFS_recursive ', BFS_recursive(5, treeA));
+}
 
 </script>
