@@ -1,0 +1,75 @@
+:root {
+  --shadow: 0 2px 2px gray;
+  --blue: rgb(57, 178, 219);
+  --primary: #ddd;
+}
+
+html {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  margin: 30px 50px;
+  background: #ccc;
+}
+
+/* ----------------------------------------- */
+/* NAV BAR */
+
+.navbar {
+  padding: 0;
+
+  display: flex;
+  justify-content: space-evenly;
+
+  font-size: 12px;
+  font-weight: bold;
+
+  list-style: none;
+}
+
+.navbar .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-decoration: none;
+  padding: 1em 1.5em;
+
+  border: none;
+  color: white;
+  border-radius: 0.5em;
+  background: var(--blue);
+  box-shadow: var(--shadow);
+}
+
+.navbar .button:hover {
+  color: var(--blue);
+  background: lightgray;
+}
+/* ----------------------------------------- */
+.pictureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 20px;
+}
+
+.pictureGrid img {
+  width: 100%;
+  background: var(--primary);
+  box-shadow: var(--shadow);
+
+  border-radius: 2em;
+}
+
+/* ----------------------------------------- */
+.about {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.about p{
+  font-weight: bold;
+}
