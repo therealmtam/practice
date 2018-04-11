@@ -61,7 +61,32 @@ Postorder on binary search tree = 1, 2, 3, 4, 6, 8, 7, 5 (left, right, root)
   - Use Postorder if you want to search all the leaves of any tree before searching the roots
   - Use it also to delete nodes from a tree since you delete the leaves before their parent
 
+----------------------------------
+RECURSION IN TREES:
+- Recursion's use in Trees is to move row to row. However, by using a STACK or a QUEUE, you can avoid using recursion and instead use a while loop to process nodes from a continuously filled stack or queue that you add nodes to as you go.
+
+- For ALL recursive solutions of DF TRAVERSAL where the recursion represents the move of row to row, the max number of calls on the callstack is equal to the depth of tree.
+
+----------------------------------
+THE DIFFERENCE BETWEEN USING A STACK OR QUEUE FOR DF TRAVERSAL
+- The difference between a stack and queue are the order you retrieve values from them.
+
+- For BF, you are adding in nodes and processing them in the same order in which you added them. For depth first, you add in nodes from the top of the tree down to the bottom, but process nodes starting with the bottom nodes up to the top. So BF is queue and DF is always a stack.
+
+- For a depth first preorder traversal where you while loop row by row and gather the child nodes from the top of the tree downward, you process in the reverse order starting with the most recently added (i.e. the bottom nodes) before you move up and process the nodes added into the data structure first. This implies the use of a stack rather than using a queue.
+
+- For depth first inorder traversal where you need to grab all the left nodes starting from the top down to the bottom of the tree, and process from bottom to the top, you also need a stack.
+
+----------------------------------
+EASIEST TO USE FOR DF AND BF:
+- For DF, PREORDER is easiest to use and the ITERATIVE VERSION is the easiest using a constantly filling STACK and a while loop that moves from row to row popping, analyzing, then pushing in the right and left or N number of kids onto the stack depending on the order on which you want to pop them.
+
+- For BF, a queue with an ITERATIVE solution is the easiest to use with a constantly filling QUEUE where you while loop until the queue is empty, shifting, analyzing, and adding on the children nodes to the queue from left node to right.
+
+
 */
+//---------------------------------------------------------------------------------------------
+//TEST CASES
 
 function TreeNode(val) {
   this.val = val;
@@ -76,17 +101,96 @@ treeA.right.left = new TreeNode(6);
 treeA.right.right = new TreeNode(7);
 treeA.left.left = new TreeNode(4);
 treeA.left.right = new TreeNode(5);
+/*
+    1
+   /  \
+  2    3
+  /\   /\
+ 4 5  6  7
 
+Inorder: 4 2 5 1 6 3 7
+Preorder: 1 2 4 5 3 6 7
+Postorder: 4 5 2 6 7 3 1
+
+*/
 console.log('Tree A ', treeA);
+//---------------------------------------------------------------------------------
+// INORDER: L N R (ONLY WORKS FOR BINARY TREES SINCE THERE CAN'T BE MORE THAN 2 CHILDREN IN L N R)
+/*
+  Abstract Concept:
+  - In order should be looked at as going deep left, then checking the parent, then go right then go deep left again
+
+       P1 => [1a,1b,1c,P1 | 2a,2b,P2 | 3b] => this is the order of going deep down left, then up to the parent.
+     1c   P2
+    1b   2b  3b
+   1a   2a
+
+  - This algorithm is different than preorder where you do steps down the left side incrementally adding to the stack as you go. In this algorithm, you need to populate the stack before processing in order to model the dive to find the lowest left node then going back up to the parent, moving right then populate the stack again with all the right node's left nodes.
+
+  Steps in order are:
+  - initiate the stack by looping through to grab all left nodes from the root node where the last node is at the top of the stack, ex. [P1, 1c, 1b, 1a] (top of stack)
+  - process each node one by one (ex. while loop through the stack until it is empty starting with 1a)
+    - analyze the node
+    - if there is a right node, loop to grab all its left nodes into the stack (ex. when on node P1, push [P2, 2b, 2a into a stack];
+
+    Visually it is processing of these 3 groups one batch at a time:
+          P1 => then  P2 => 3b
+        1c          2b
+      1b          2a
+    1a
+
+  * If there were many children, you need to use Preorder or Postorder to pop off children from the stack before reaching their parents. Inorder doesn't work on non-binary trees.
+
+  - For INORDER, RECURSION IS SIMPLIER because each recursive call is a move down a row in the tree. Whereas in the while loop version, each loop doesn't represent a step from row to row, it represents a processing of a batch of left nodes, the parent node, and gathering of more left nodes. So logically they are different and unless the movement is understood (i.e., that you have to gather all of the left nodes), reading the RECURSIVE version is easier than the while loop.
+
+*/
+
+const inorder_iterative = (target, node) => {
+
+  //Helper function to grab all the left nodes of a given node including the node.
+  //Returns a stack of all the left nodes including the node itself.
+  function stackItsLeftNodesIncludingItself (node) {
+    let stack = [node];
+    let currentNode = node;
+    while (currentNode.left) {
+      stack.push(currentNode.left);
+      currentNode = currentNode.left;
+    }
+    return stack;
+  }
+
+  //Initialize the stack with all the left nodes of the root node including the root node
+  let stack = stackItsLeftNodesIncludingItself(node);
+
+  while (stack.length) {
+    //Get bottom most left node of tree from the top of the stack
+    let currentNode = stack.pop();
+
+        //Order of Processing:
+        console.log(currentNode.val);
+
+    //Analyze the current node
+    if (currentNode.val === target) return currentNode;
+
+    //Check if it has right node, if so, add it's leftNodes to the stack
+    if (currentNode.right) stack = [...stack, ...stackItsLeftNodesIncludingItself(currentNode.right)];
+  }
+
+  return null;
+
+}
+
+console.log('Inorder While ', inorder_iterative(7, treeA));
+
 //------------------------
-const inorderSearch = (targetVal, treeNode) => {
+const inorder_recursive = (targetVal, treeNode) => {
 
   //left, root, right is the traversal order
 
   //if treeNode has a left child
   if (treeNode.left) {
     //recurse with targetVal and treeNode.left
-    let foundNode = inorderSearch(targetVal, treeNode.left);
+    let foundNode = inorder_recursive(targetVal, treeNode.left);
       //set resultOfRecurse = the recurse return value
       //if the result is a node, search is over and return the node
       if (foundNode) return foundNode;
@@ -97,7 +201,7 @@ const inorderSearch = (targetVal, treeNode) => {
   //if treeNode has a right child
   if (treeNode.right) {
     //recurse with the targetVal and treeNode.right
-    let foundNode = inorderSearch(targetVal, treeNode.right);
+    let foundNode = inorder_recursive(targetVal, treeNode.right);
       //set result to the return
       //if result is a node, search is over and return the node
       if (foundNode) return foundNode;
@@ -106,10 +210,53 @@ const inorderSearch = (targetVal, treeNode) => {
   return null;
 };
 
-console.log(inorderSearch(7, treeA));
+console.log(inorder_recursive(7, treeA));
+
+//---------------------------------------------------------------------------------
+// PRE ORDER: N L R Check Parent, then Leaves (USABLE FOR VARIABLE NUMBER OF CHILDREN, NOT JUST BINARY TREES)
+/*
+  Abstract Concept:
+  - Go step by step checking the parent nodes and heading toward the left side before going right
+  - Use a stack to dive deep and process the kids of your node first and their kids
+    - Since you process the top of the stack and the last added item to the stack is the kids (either right or left depending on the order you push them in), you will then be processing the most recently added kid.
+    - If a queue was used, it would be breadth first
+
+       a => Loop 1 [a] [c b], Loop 2 [c e d], Loop 3 [c e], Loop 4 [c], Loop 5 [g f]( <= top of stack) (new nodes added to front of stack)] => process a, b, d, e, c, f, g
+     b   c
+    d e f g
+
+      a => [(process order =>) a,b,c, (new nodes added to back of queue)] => a queue
+     b c
+
+  CONCEPT OF A CONTINUOUS FILLED STACK:
+  The most recently added items get processed first. So when moving (via a loop or recusively) through a data structure of unknown length where you want to work on the most recently seen items, use a stack.
+*/
+
+const preorder_iterative = (target, node) => {
+  //Initialize stack
+  let stack = [node];
+
+  //loop to go through the continuously filled stack:
+  while (stack.length) {
+    //get the current node off the stack:
+    let currentNode = stack.pop();
+
+    //analyze the current node
+    if (currentNode.val === target) return currentNode;
+
+    //Check if it has children to add to the stack. Note that right is added first since we process the front of the stack first which will be the last added item which is left. It can also be reversed depending on desired processing path of N L R or N R L:
+    if (currentNode.right) stack.push(currentNode.right);
+    if (currentNode.left) stack.push(currentNode.left);
+  }
+
+  return null;
+};
+
+console.log('Preorder_iterative ', preorder_iterative(6, treeA));
 
 //------------------------
-const preorderSearch = (targetVal, treeNode) => {
+
+const preorder_recursive = (targetVal, treeNode) => {
 
   //root, left, right is the traversal order
 
@@ -120,7 +267,7 @@ const preorderSearch = (targetVal, treeNode) => {
   //if currentNode has a left child,
   if (treeNode.left) {
     //recurse preorderSearch with target val and pass in the left node
-    let foundNode = preorderSearch(targetVal, treeNode.left);
+    let foundNode = preorder_recursive(targetVal, treeNode.left);
       //if the return of the recurse is a node, return it back up because search is over
       if (foundNode) return foundNode;
       //else if it is null, move onto next step
@@ -129,7 +276,7 @@ const preorderSearch = (targetVal, treeNode) => {
   //if currentNode has a right child,
   if (treeNode.right) {
     //recurse preorderSearch with target val and pass in the right node
-    let foundNode = preorderSearch(targetVal, treeNode.right);
+    let foundNode = preorder_recursive(targetVal, treeNode.right);
       //if the return of the recurse is a node, return it back up because search is over
       if (foundNode) return foundNode;
       //else if it is null, move onto next step
@@ -138,19 +285,131 @@ const preorderSearch = (targetVal, treeNode) => {
   return null;
 }
 
-console.log(preorderSearch(6, treeA));
+console.log(preorder_recursive(6, treeA));
+
+//---------------------------------------------------------------------------------
+// POST ORDER: L R N (Check the leaves before checking the parent) (USABLE FOR VARIABLE NUMBER OF CHILDREN, NOT JUST BINARY TREES)
+/*
+  Abstract Concept:
+  - Go deep left then right then parent, and wherever right has a left node, go deep left first
+
+  - Iterative:
+
+    - 2 Stacks version: (It requires 2 stacks to create a stack in post-order order. But processing can't happen until all of the nodes have been pushed to the stack.)
+
+      - Initiate stack 1 with the root node.
+      - Use a while loop until stack 1 is empty (stack 1 is a temporary storage for nodes prior to the node being placed into stack 2 which will be the stack with the post-order order)
+        - pop the top node from stack 1 to be the current node we are organizing
+        - push it into stack 2
+        - push the current node's children into stack 1 (order is push in LEFT then RIGHT due to how it will be organized in stack 2 and that post order wants L R ordering when we use stack 2 as our post order order).
+        - Loop again until all nodes in stack 1 have been ordered in stack 2.
+      - This will result in stack 2 ordered in Post Order fashion which we can then pop one by one and process.
+
+      Note: this version requires the long construction of stack 2 before any processing can occur.
+
+    - 1 Stack version: (This version allows for processing as we go just like the recursive version of Post Order traversal, however, it's movement is not straight forward and more complex.)
+
+      - Initiate stack as empty.
+      - Do one iteration of the process in order to initialize the stack to not be empty
+        - If the root node has a right node, push it into the stack
+        - Next, push in the root node
+        - Set a pointer called current node to = left node of the root node which will be = null or a node
+
+      - While the stack is not empty
+        - If the current node is not null (meaning we haven't reached the end of a left subtree yet),
+          - if it has a right node, push it into the stack, then push in the current node into the stack
+          - set the current node to be the left node of the current node (which will = null or a node)
+        - Else if the current node is null (i.e., we've reached the end of a left subtree),
+          - Pop the last pushed item on the stack. This popped node can ONLY be either a Parent node OR a solo left node with no children. So we need to check for which one it is. If it is a parent, it will have a right node we haven't processed. If it is a solo left node, we analyze it.
+              - To check if it is a parent node, we check if the node has a right node and if that right node is the same node that is on the top of the stack (meaning, we haven't processed it's right node yet)
+                - If it does, pop the right node from the stack, set it to be the current node, and push the node we just popped back onto the stack since the node is a parent node and needs to be checked after this current right node we just popped.
+              - If it doesn't have a right node, then we know it is a solo left node and so we analyze it and we leave the current node as NULL for the next iteration.
+
+      Note how complex the logic for this process is, but it is the only ITERATIVE solution that can process nodes as you put them into the stack.
+
+  - Recursive:
+    - The recursive version of Post Order Traversal is the easiest to understand, write, and allows for processing as you traverse. It moves row by row with each recursive call just like all other recursive usage in tree traversal. You can process node by node
+*/
 
 //------------------------
-const postorderSearch = (targetVal, treeNode) => {
+
+const postorder_iterative_1Stack = (target, node) => {
+//Initiate one iteration of the loop to start the stack:
+  let stack = [];
+  //If there is a right node, push it onto the stack
+  if (node.right) stack.push(node.right);
+  //Push the root node onto the stack
+  stack.push(node);
+  //Set the pointer of current node to the left node. Movement is based on the current node pointer.
+  let currentNode = node.left; //this will either be null or a node
+
+//Traverse:
+  while(stack.length) {
+    if (currentNode) { //if we haven't reached the end of a left subtree
+      if (currentNode.right) stack.push(currentNode.right); //push in the right node if it exists
+      stack.push(currentNode);  //push in the current node no matter what
+      currentNode = currentNode.left; //set the pointer to be the left node of the current node
+    } else { //if we have reached the end of a left subtree
+      let poppedNode = stack.pop(); //this is either a parent node or a solo left node
+      if (poppedNode.right === stack[stack.length - 1]) { //meaning this popped node is a parent node with a right side node that we haven't processed yet and is at the top of the stack.
+        currentNode = stack.pop(); //this is the right node and we will process it on the next iteration
+        stack.push(poppedNode); //after popping the right node, we place this parent node back onto the stack
+      } else { //meaning the poppedNode is a solo left node
+
+        //print the order
+        // console.log(poppedNode.val);
+
+        //Analyze the solo left node
+        if (poppedNode.val === target) return poppedNode;
+      }
+    }
+  }
+
+  return null;
+};
+
+console.log('Postorder_iterative_1Stack ', postorder_iterative_1Stack(1, treeA));
+
+//------------------------
+const postorder_iterative_2Stacks = (target, node) => {
+
+  //Generate the post-order stack using 2 stacks:
+    let stack1 = [node];
+    let stack2 = []; //this will be the post-ordered stack
+
+    while (stack1.length) {
+      let currentNode = stack1.pop();
+      stack2.push(currentNode);
+      if (currentNode.left) stack1.push(currentNode.left);
+      if (currentNode.right) stack1.push(currentNode.right);
+    }
+
+  //Analyze the nodes in stack2 which is post-ordered
+    while (stack2.length) {
+      let currentNode = stack2.pop();
+
+        //print out the order:
+        // console.log(currentNode.val);
+
+      if (currentNode.val === target) return currentNode;
+    }
+
+  return null;
+};
+
+console.log('Postorder_iterative_2Stacks ', postorder_iterative_2Stacks(1, treeA));
+
+//------------------------
+const postorder_recursive = (targetVal, treeNode) => {
   //left right root is the traversal order
 
   if (treeNode.left) {
-    let foundNode = postorderSearch(targetVal, treeNode.left);
+    let foundNode = postorder_recursive(targetVal, treeNode.left);
     if (foundNode) return foundNode;
   }
 
   if (treeNode.right) {
-    let foundNode = postorderSearch(targetVal, treeNode.right);
+    let foundNode = postorder_recursive(targetVal, treeNode.right);
     if (foundNode) return foundNode;
   }
 
@@ -158,11 +417,11 @@ const postorderSearch = (targetVal, treeNode) => {
   return null;
 };
 
-console.log(postorderSearch(7, treeA));
+console.log(postorder_recursive(7, treeA));
 
 
-//----------------------------------------------------------
-// Breadth First:
+//---------------------------------------------------------------------------------
+// BREADTH FIRST SEARCH:
 /*
   Abstract concept:
   - Use a queue to fill it up with nodes and child nodes
@@ -198,11 +457,14 @@ console.log(postorderSearch(7, treeA));
       - if the next row's queue is empty, then return the result of the analysis/action
       - if the next row's queue is not empty, then recurse, passing in the next row's queueOfRowsNodes
 
-  - Based on this breakdown, there are 2 loops being used for this one (recursive loop to move rows and for loop to go through each row), and while loop to go through the queue in the non-recursive route. The time complexity of both is the same since you have to visit each node in the same order.
+  Based on this breakdown, there are 2 loops being used for this one (recursive loop to move rows and for loop to go through each row), and while loop to go through the queue in the non-recursive route. The time complexity of both is the same since you have to visit each node in the same order.
+
+  CONCEPT OF THE CONSTANT FILLING QUEUE:
+  The ability to simply use a queue and a while loop and continuously populate the queue with more items at each iteration is due to the fact that nodes have children. This concept of a constant filling queue works when each item in the queue can link to other items.
 */
 
 {
-  const BFS_while = (target, node) => {
+  const BFS_iterative = (target, node) => {
     let queue = [node]; //initialize before while loop
 
     while (queue.length) {
@@ -221,7 +483,7 @@ console.log(postorderSearch(7, treeA));
   };
 
 
-  console.log('BFS_while ', BFS_while(5, treeA));
+  console.log('BFS_iterative ', BFS_iterative(5, treeA));
 }
 
 {

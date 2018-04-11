@@ -1,20 +1,25 @@
 PROBLEM TYPES:
 - Traversal of a data structure and do ___
+  Ex.) BF or DF of a tree/graph to find something in least steps possible / binary search to find something
 
 - Design an algorithm to solve a problem and optimize it for time complexity
   - Optimize it using a data structure
+  - Ex.) Represent a board as a bunch of tree nodes and traverse it that way.
 
 - Design a algo to move through a set of data as efficiently as possible to solve ___.
   - These algos usually need to do something while moving through. Those sub actions can be
   stubbed out into separate helpers to abstract away actions.
+  - Ex.) Binary search to find things you stash into a data structure etc.
 
 
-TRAVERSAL METHODS:
 
-Inorder -
-Preorder -
-Postorder -
+//BINARY TREE:
 
+- TRAVERSAL METHODS:
+
+Inorder - L N R
+Preorder - N L R
+Postorder - L R N
 
 Depth First Traversals of Trees:
      1
@@ -32,9 +37,6 @@ Depth First Traversals of Trees:
 
 Level - keeping track of level in tree, moving left to right on each node
 Zigzag - keep track of level in tree, moving left to right, then right to left
-
-
-DATA STRUCTURES:
 
 Binary Tree:
       8
@@ -94,7 +96,8 @@ Binary Tree:
     Assign the previous node's left (or right) to the current's right node
 
 
-
+//----------------------------------------------------------------------------
+HEAP:
 
 Heap: (min or max is the parent node (the node at the top))
 
@@ -102,3 +105,13 @@ Heap: (min or max is the parent node (the node at the top))
 - Heap is inserted left to right no matter what. Then the node is bubbled up to it's "right" location that satisfies the heap criteria.
 - There is no concept of a left or right node because that order doesn't matter unlike a binary tree.
 - Heap criteria for final placement is that it is less than the parent node AND its child nodes need to be less than it.
+
+
+//----------------------------------------------------------------------------
+NOTES ON ALGOS:
+
+- While and Recursion are used when you want to abstract (not actively manage) the number of iterations the program must go through. They should be used when it is HARD to actively count the number of loop iterations or it is not possible to know beforehand such as in a BFS or DFS.
+  - A for loop should be used when it is EASY to determine the number of iterations.
+
+- Try to abstract extra steps out of managing a process.
+  - Using a queue and a while loop to manage BF traversal by popping item onto the queue
