@@ -112,20 +112,86 @@ class LinkedList {
 
 
 //TEST
-let x = new LinkedList();
-x.addNode(1);
-x.addNode(2);
-x.addNode(3);
-x.addNode(4);
-x.addNode(5);
-x.addNode(6);
-x.addNode(7);
-x.addNode(8);
-x.addNode(9);
-x.addNode(10);
-console.log(x);
+// let x = new LinkedList();
+// x.addNode(1);
+// x.addNode(2);
+// x.addNode(3);
+// x.addNode(4);
+// x.addNode(5);
+// x.addNode(6);
+// x.addNode(7);
+// x.addNode(8);
+// x.addNode(9);
+// x.addNode(10);
+// console.log(x);
 
 
+//-------------------------------------------------------------
+// Reverse a Linked List:
+
+let testList = new Node(1);
+testList.next = new Node(2);
+testList.next.next = new Node(3);
+testList.next.next.next = new Node(4);
+testList.next.next.next.next = new Node(5);
+testList.next.next.next.next.next = new Node(6);
+
+printLinkedList(testList);
+
+function reverseLinkedList (node) {
+debugger;
+  //pointer for previous node
+  let previousNode = null;
+  //pointer for current node
+  let currentNode = node;
+
+  //if values for each node are unique
+  let hasSeenVal = {};
+
+  //While not reached the end of the list OR you have gone through all of the nodes (meaning if in current = null)
+  while (currentNode) {
+    //save the current node's next node. It will become the next current node.
+    let oldNextNode = currentNode.next;
+    //point the current node's next to the previous node
+    currentNode.next = previousNode;
+
+    hasSeenVal[currentNode.val] = currentNode.val;
+    //move the pointers to the next node
+      //set the current node to the current node's previous next node
+    let temp = currentNode;
+    currentNode = oldNextNode;
+      //set the previous node to be the current node
+    previousNode = temp;
+    //check if the newly set current node is = node we've previously seen
+      //if true, then break;
+    if (currentNode) {
+      if (typeof hasSeenVal[currentNode.val] === 'number') break;
+    }
+  }
+
+  //return the new head of the linkedList:
+  return previousNode;
+}
+
+function printLinkedList (node) {
+  let hasSeenVal = {};
+  let currentNode = node;
+  let vals = [];
+
+  while (currentNode) {
+    vals.push(currentNode.val);
+    hasSeenVal[currentNode.val] = currentNode.val;
+    currentNode = currentNode.next;
+    if (currentNode) {
+      if (typeof hasSeenVal[currentNode.val] === 'number') break;
+    }
+  }
+
+  console.log(vals);
+}
+
+let newHead = reverseLinkedList(testList);
+printLinkedList(newHead);
 
 
 </script>
